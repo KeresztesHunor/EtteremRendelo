@@ -1,13 +1,54 @@
 package view;
 
-import javax.swing.JRadioButton;
+import java.util.Collections;
+import java.util.List;
+import javax.swing.AbstractButton;
+import javax.swing.DefaultListModel;
+import javax.swing.ListModel;
+import model.Action;
+import model.Action2;
+import model.Action1;
 
 public class GUI extends javax.swing.JFrame
 {
-    public GUI()
+    private int jelenlegKivalasztottAsztalIndex;
+    
+    private final List<AbstractButton> asztalRadioGombok;
+    
+    private final Action1<Integer> radioButtonSelectionChangedEvent;
+    private final Action2<Integer, String> newRendelesAddedEvent;
+    private final Action etelekFajlbaIrEvent;
+    private final Action rendelesekFajlbaIrEvent;
+    
+    public GUI(Action1<Integer> radioButtonSelectionChangedEvent, Action2<Integer, String> newRendelesAddedEvent, Action etelekFajlbaIrEvent, Action rendelesekFajlbaIrEvent)
     {
         initComponents();
+        jelenlegKivalasztottAsztalIndex = 0;
+        asztalRadioGombok = Collections.list(asztalButtonGroup.getElements());
+        this.radioButtonSelectionChangedEvent = radioButtonSelectionChangedEvent;
+        this.newRendelesAddedEvent = newRendelesAddedEvent;
+        this.etelekFajlbaIrEvent = etelekFajlbaIrEvent;
+        this.rendelesekFajlbaIrEvent = rendelesekFajlbaIrEvent;
         setVisible(true);
+    }
+    
+    private void radioButtonSelectionChanged(int index)
+    {
+        jelenlegKivalasztottAsztalIndex = index;
+        if (asztalRadioGombok.get(index).isSelected())
+        {
+            radioButtonSelectionChangedEvent.invoke(index);
+        }
+    }
+    
+    public void setRendelesek(List<String> rendelesek)
+    {
+        final DefaultListModel<String> dlm = new DefaultListModel();
+        for (String rendeles : rendelesek)
+        {
+            dlm.addElement(rendeles);
+        }
+        rendelesekLista.setModel(dlm);
     }
 
     @SuppressWarnings("unchecked")
@@ -23,6 +64,7 @@ public class GUI extends javax.swing.JFrame
         ujEteltHozzaadGomb = new javax.swing.JButton();
         etelekListaScrollPane = new javax.swing.JScrollPane();
         etelekLista = new javax.swing.JList<>();
+        etelekFajlbaIrGomb = new javax.swing.JButton();
         asztalPanel = new javax.swing.JPanel();
         pirosAszalRadioButton = new javax.swing.JRadioButton();
         zoldAszalRadioButton = new javax.swing.JRadioButton();
@@ -32,6 +74,7 @@ public class GUI extends javax.swing.JFrame
         rendelesekPanel = new javax.swing.JPanel();
         rendelesekListaScrollPane = new javax.swing.JScrollPane();
         rendelesekLista = new javax.swing.JList<>();
+        rendelesekFajlbaIrGomb = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rendelés");
@@ -46,11 +89,18 @@ public class GUI extends javax.swing.JFrame
         ujEteltHozzaadGomb.setText("+");
 
         etelekLista.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            String[] strings = { "Babgulyás", "Tarhonyás hús", "Bécsi szelet", "Gőzgombóc", "Paradicsom leves" };
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
         etelekListaScrollPane.setViewportView(etelekLista);
+
+        etelekFajlbaIrGomb.setText("Fájlba ír");
+        etelekFajlbaIrGomb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                etelekFajlbaIrGombActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout etelekPanelLayout = new javax.swing.GroupLayout(etelekPanel);
         etelekPanel.setLayout(etelekPanelLayout);
@@ -70,7 +120,8 @@ public class GUI extends javax.swing.JFrame
                         .addComponent(etelArSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(ujEteltHozzaadGomb)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(etelekFajlbaIrGomb, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         etelekPanelLayout.setVerticalGroup(
@@ -84,13 +135,16 @@ public class GUI extends javax.swing.JFrame
                     .addComponent(etelArSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(ujEteltHozzaadGomb))
                 .addGap(18, 18, 18)
-                .addComponent(etelekListaScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                .addComponent(etelekListaScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(etelekFajlbaIrGomb)
                 .addContainerGap())
         );
 
         asztalPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Asztal"));
 
         asztalButtonGroup.add(pirosAszalRadioButton);
+        pirosAszalRadioButton.setSelected(true);
         pirosAszalRadioButton.setText("Piros");
         pirosAszalRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -123,6 +177,11 @@ public class GUI extends javax.swing.JFrame
         });
 
         ujRendelestHozzaadGomb.setText("->");
+        ujRendelestHozzaadGomb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ujRendelestHozzaadGombActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout asztalPanelLayout = new javax.swing.GroupLayout(asztalPanel);
         asztalPanel.setLayout(asztalPanelLayout);
@@ -156,12 +215,14 @@ public class GUI extends javax.swing.JFrame
 
         rendelesekPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Rendelések"));
 
-        rendelesekLista.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         rendelesekListaScrollPane.setViewportView(rendelesekLista);
+
+        rendelesekFajlbaIrGomb.setText("Fájlba ír");
+        rendelesekFajlbaIrGomb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rendelesekFajlbaIrGombActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout rendelesekPanelLayout = new javax.swing.GroupLayout(rendelesekPanel);
         rendelesekPanel.setLayout(rendelesekPanelLayout);
@@ -169,14 +230,18 @@ public class GUI extends javax.swing.JFrame
             rendelesekPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(rendelesekPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(rendelesekListaScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
+                .addGroup(rendelesekPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(rendelesekListaScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
+                    .addComponent(rendelesekFajlbaIrGomb, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         rendelesekPanelLayout.setVerticalGroup(
             rendelesekPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, rendelesekPanelLayout.createSequentialGroup()
+            .addGroup(rendelesekPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(rendelesekListaScrollPane)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(rendelesekFajlbaIrGomb)
                 .addContainerGap())
         );
 
@@ -195,43 +260,54 @@ public class GUI extends javax.swing.JFrame
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(rendelesekPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(asztalPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(etelekPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                    .addComponent(etelekPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void pirosAszalRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pirosAszalRadioButtonActionPerformed
-        radioButtonSelectionChanged(pirosAszalRadioButton, 0);
+        radioButtonSelectionChanged(0);
     }//GEN-LAST:event_pirosAszalRadioButtonActionPerformed
 
     private void zoldAszalRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_zoldAszalRadioButtonActionPerformed
-        radioButtonSelectionChanged(zoldAszalRadioButton, 1);
+        radioButtonSelectionChanged(1);
     }//GEN-LAST:event_zoldAszalRadioButtonActionPerformed
 
     private void kekAszalRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kekAszalRadioButtonActionPerformed
-        radioButtonSelectionChanged(kekAszalRadioButton, 2);
+        radioButtonSelectionChanged(2);
     }//GEN-LAST:event_kekAszalRadioButtonActionPerformed
 
     private void feherAszalRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_feherAszalRadioButtonActionPerformed
-        radioButtonSelectionChanged(feherAszalRadioButton, 3);
+        radioButtonSelectionChanged(3);
     }//GEN-LAST:event_feherAszalRadioButtonActionPerformed
 
-    private void radioButtonSelectionChanged(JRadioButton button, int index)
-    {
-        if (button.isSelected())
+    private void ujRendelestHozzaadGombActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ujRendelestHozzaadGombActionPerformed
+        final String etel = etelekLista.getSelectedValue();
+        final ListModel<String> rendelesek = rendelesekLista.getModel();
+        final DefaultListModel<String> dlm = new DefaultListModel();
+        for (int i = 0; i < rendelesek.getSize(); i++)
         {
-            
+            dlm.addElement(rendelesek.getElementAt(i));
         }
-    }
+        dlm.addElement(etel);
+        rendelesekLista.setModel(dlm);
+        newRendelesAddedEvent.invoke(jelenlegKivalasztottAsztalIndex, etel);
+    }//GEN-LAST:event_ujRendelestHozzaadGombActionPerformed
+
+    private void rendelesekFajlbaIrGombActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rendelesekFajlbaIrGombActionPerformed
+        rendelesekFajlbaIrEvent.invoke();
+    }//GEN-LAST:event_rendelesekFajlbaIrGombActionPerformed
+
+    private void etelekFajlbaIrGombActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_etelekFajlbaIrGombActionPerformed
+        etelekFajlbaIrEvent.invoke();
+    }//GEN-LAST:event_etelekFajlbaIrGombActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup asztalButtonGroup;
@@ -240,12 +316,14 @@ public class GUI extends javax.swing.JFrame
     private javax.swing.JSpinner etelArSpinner;
     private javax.swing.JLabel etelNevLabel;
     private javax.swing.JTextField etelNevTextField;
+    private javax.swing.JButton etelekFajlbaIrGomb;
     private javax.swing.JList<String> etelekLista;
     private javax.swing.JScrollPane etelekListaScrollPane;
     private javax.swing.JPanel etelekPanel;
     private javax.swing.JRadioButton feherAszalRadioButton;
     private javax.swing.JRadioButton kekAszalRadioButton;
     private javax.swing.JRadioButton pirosAszalRadioButton;
+    private javax.swing.JButton rendelesekFajlbaIrGomb;
     private javax.swing.JList<String> rendelesekLista;
     private javax.swing.JScrollPane rendelesekListaScrollPane;
     private javax.swing.JPanel rendelesekPanel;
