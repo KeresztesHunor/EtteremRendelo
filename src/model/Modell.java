@@ -1,7 +1,13 @@
 package model;
 
+import etteremrendelo.EtteremRendelo;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Modell
 {
@@ -18,16 +24,6 @@ public class Modell
         asztalok[3] = new Asztal("Fehér");
     }
     
-    public int getEtelekLength()
-    {
-        return etelek.size();
-    }
-    
-    public int getAsztalokLength()
-    {
-        return asztalok.length;
-    }
-    
     public Etel getEtel(int index)
     {
         return etelek.get(index);
@@ -38,11 +34,6 @@ public class Modell
         etelek.add(etel);
     }
     
-    public String getAsztalNev(int asztalIndex)
-    {
-        return asztalok[asztalIndex].getAsztalNev();
-    }
-    
     public List<String> getRendelesek(int asztalIndex)
     {
         return asztalok[asztalIndex].getRendelesek();
@@ -51,5 +42,50 @@ public class Modell
     public void ujRendeles(int asztalIndex, String rendeles)
     {
         asztalok[asztalIndex].ujRendeles(rendeles);
+    }
+    
+    public void eteleketFajlbaIr()
+    {
+        List<String> sorok = new ArrayList();
+        for (int i = 0; i < etelek.size(); i++)
+        {
+            sorok.add(etelek.get(i).toString());
+        }
+        fajlbaIr("etelek.txt", sorok);
+    }
+    
+    public void rendeleseketFajlbaIr()
+    {
+        List<String> sorok = new ArrayList();
+        for (int i = 0; i < asztalok.length; i++)
+        {
+            sorok.add(asztalok[i].getAsztalNev());
+            for (String rendeles : asztalok[i].getRendelesek())
+            {
+                sorok.add(rendeles);
+            }
+            if (i < asztalok.length - 1)
+            {
+                sorok.add("");
+            }
+        }
+        fajlbaIr("rendelesek.txt", sorok);
+    }
+    
+    private static void fajlbaIr(String filePath, List<String> sorok)
+    {
+        Path path = Path.of(filePath);
+        try
+        {
+            if (Files.exists(path))
+            {
+                Files.delete(path);
+            }
+            Files.write(path, sorok);
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger(EtteremRendelo.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
