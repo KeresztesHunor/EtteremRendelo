@@ -88,11 +88,6 @@ public class GUI extends javax.swing.JFrame
 
         ujEteltHozzaadGomb.setText("+");
 
-        etelekLista.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Babgulyás", "Tarhonyás hús", "Bécsi szelet", "Gőzgombóc", "Paradicsom leves" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         etelekListaScrollPane.setViewportView(etelekLista);
 
         etelekFajlbaIrGomb.setText("Fájlba ír");

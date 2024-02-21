@@ -139,13 +139,7 @@
             <Component class="javax.swing.JList" name="etelekLista">
               <Properties>
                 <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
-                  <StringArray count="5">
-                    <StringItem index="0" value="Babguly&#xe1;s"/>
-                    <StringItem index="1" value="Tarhony&#xe1;s h&#xfa;s"/>
-                    <StringItem index="2" value="B&#xe9;csi szelet"/>
-                    <StringItem index="3" value="G&#x151;zgomb&#xf3;c"/>
-                    <StringItem index="4" value="Paradicsom leves"/>
-                  </StringArray>
+                  <StringArray count="0"/>
                 </Property>
               </Properties>
               <AuxValues>
