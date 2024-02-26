@@ -29,17 +29,27 @@ public class Modell
         return etelek.get(index);
     }
     
+    public int getEtelekLength()
+    {
+        return etelek.size();
+    }
+    
     public void ujEtel(Etel etel)
     {
         etelek.add(etel);
     }
     
-    public List<String> getRendelesek(int asztalIndex)
+    public Asztal getAsztal(int index)
+    {
+        return asztalok[index];
+    }
+    
+    public List<Etel> getRendelesek(int asztalIndex)
     {
         return asztalok[asztalIndex].getRendelesek();
     }
     
-    public void ujRendeles(int asztalIndex, String rendeles)
+    public void ujRendeles(int asztalIndex, Etel rendeles)
     {
         asztalok[asztalIndex].ujRendeles(rendeles);
     }
@@ -60,9 +70,9 @@ public class Modell
         for (int i = 0; i < asztalok.length; i++)
         {
             sorok.add(asztalok[i].getAsztalNev());
-            for (String rendeles : asztalok[i].getRendelesek())
+            for (Etel rendeles : asztalok[i].getRendelesek())
             {
-                sorok.add(rendeles);
+                sorok.add(rendeles.getNev());
             }
             if (i < asztalok.length - 1)
             {

@@ -1,10 +1,39 @@
 package view;
 
-public class NyugtaGUI extends javax.swing.JFrame
+import java.util.List;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import model.Action;
+import model.Etel;
+
+public class NyugtaGUI extends javax.swing.JFrame implements NyugtaView
 {
-    public NyugtaGUI()
+    private final Action nyomtatasEvent;
+    
+    public NyugtaGUI(Action nyomtatasEvent)
     {
         initComponents();
+        this.nyomtatasEvent = nyomtatasEvent;
+        setVisible(true);
+    }
+    
+    @Override public void nyugtatKiir(List<Etel> pirosAsztalRendelesek, List<Etel> zoldAsztalRendelesek, List<Etel> kekAsztalRendelesek, List<Etel> feherAsztalRendelesek)
+    {
+        nyugtaKiir(pirosAsztalList, pirosAsztalRendelesek);
+        nyugtaKiir(zoldAsztalList, zoldAsztalRendelesek);
+        nyugtaKiir(kekAsztalList, kekAsztalRendelesek);
+        nyugtaKiir(feherAsztalList, feherAsztalRendelesek);
+    }
+    
+    private void nyugtaKiir(JList<String> asztalRendelesekLista, List<Etel> rendelesek)
+    {
+        final DefaultListModel<String> dlm = new DefaultListModel();
+        for (int i = 0; i < rendelesek.size(); i++)
+        {
+            Etel etel = rendelesek.get(i);
+            dlm.addElement(String.format("%-28s %8d Ft", etel.getNev(), etel.getAr()));
+        }
+        asztalRendelesekLista.setModel(dlm);
     }
     
     @SuppressWarnings("unchecked")
@@ -13,7 +42,7 @@ public class NyugtaGUI extends javax.swing.JFrame
 
         pirosAsztalPanel = new javax.swing.JPanel();
         pirosAsztalScrollPane = new javax.swing.JScrollPane();
-        pirosAszalList = new javax.swing.JList<>();
+        pirosAsztalList = new javax.swing.JList<>();
         pirosAsztalOsszesenLabel = new javax.swing.JLabel();
         pirosAsztalOsszegLabel = new javax.swing.JLabel();
         zoldAsztalPanel = new javax.swing.JPanel();
@@ -33,18 +62,13 @@ public class NyugtaGUI extends javax.swing.JFrame
         feherAsztalOsszegLabel = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Nyugta");
         setResizable(false);
 
         pirosAsztalPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Piros asztal"));
 
-        pirosAszalList.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Babgulyás                700 Ft", "Rántott sajt              800 Ft" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        pirosAsztalScrollPane.setViewportView(pirosAszalList);
+        pirosAsztalScrollPane.setViewportView(pirosAsztalList);
 
         pirosAsztalOsszesenLabel.setText("Összesen:");
 
@@ -79,11 +103,6 @@ public class NyugtaGUI extends javax.swing.JFrame
 
         zoldAsztalPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Zöld asztal"));
 
-        zoldAsztalList.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Gyülmölcsleves       800 Ft", "Bécsi szelet             1200 Ft", "Somlói galuska        500 Ft" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         zoldAsztalScrollPane.setViewportView(zoldAsztalList);
 
         zoldAsztalOsszesenLabel.setText("Összesen:");
@@ -97,7 +116,7 @@ public class NyugtaGUI extends javax.swing.JFrame
             .addGroup(zoldAsztalPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(zoldAsztalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(zoldAsztalScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+                    .addComponent(zoldAsztalScrollPane)
                     .addGroup(zoldAsztalPanelLayout.createSequentialGroup()
                         .addComponent(zoldAsztalOsszesenLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -119,11 +138,6 @@ public class NyugtaGUI extends javax.swing.JFrame
 
         kekAsztalPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Kék asztal"));
 
-        kekAsztalList.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Gyülmölcsleves       800 Ft", "Rántott sajt              800 Ft" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         kekAsztalScrollPane.setViewportView(kekAsztalList);
 
         kekAsztalOsszesenLabel.setText("Összesen:");
@@ -137,7 +151,7 @@ public class NyugtaGUI extends javax.swing.JFrame
             .addGroup(kekAsztalPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(kekAsztalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(kekAsztalScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+                    .addComponent(kekAsztalScrollPane)
                     .addGroup(kekAsztalPanelLayout.createSequentialGroup()
                         .addComponent(kekAsztalOsszesenLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -159,11 +173,6 @@ public class NyugtaGUI extends javax.swing.JFrame
 
         feherAsztalPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Fehér asztal"));
 
-        feherAsztalList.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Bécsi szelet             1200 Ft" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         feherAsztalScrollPane.setViewportView(feherAsztalList);
 
         feherAsztalOsszesenLabel.setText("Összesen:");
@@ -198,6 +207,11 @@ public class NyugtaGUI extends javax.swing.JFrame
         );
 
         jButton1.setText("Nyomtatás");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -241,35 +255,9 @@ public class NyugtaGUI extends javax.swing.JFrame
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(NyugtaGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(NyugtaGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(NyugtaGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(NyugtaGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            new NyugtaGUI().setVisible(true);
-        });
-    }
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        nyomtatasEvent.invoke();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList<String> feherAsztalList;
@@ -283,7 +271,7 @@ public class NyugtaGUI extends javax.swing.JFrame
     private javax.swing.JLabel kekAsztalOsszesenLabel;
     private javax.swing.JPanel kekAsztalPanel;
     private javax.swing.JScrollPane kekAsztalScrollPane;
-    private javax.swing.JList<String> pirosAszalList;
+    private javax.swing.JList<String> pirosAsztalList;
     private javax.swing.JLabel pirosAsztalOsszegLabel;
     private javax.swing.JLabel pirosAsztalOsszesenLabel;
     private javax.swing.JPanel pirosAsztalPanel;

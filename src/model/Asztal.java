@@ -7,7 +7,7 @@ public class Asztal
 {
     private final String asztalNev;
     
-    private final List<String> rendelesek;
+    private final List<Etel> rendelesek;
     
     public Asztal(String asztalNev)
     {
@@ -20,12 +20,12 @@ public class Asztal
         return asztalNev;
     }
     
-    public void ujRendeles(String etel)
+    public void ujRendeles(Etel etel)
     {
         rendelesek.add(etel);
     }
     
-    public List<String> getRendelesek()
+    public List<Etel> getRendelesek()
     {
         return rendelesek;
     }

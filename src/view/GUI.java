@@ -4,10 +4,12 @@ import java.util.Collections;
 import java.util.List;
 import javax.swing.AbstractButton;
 import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.ListModel;
 import model.Action;
 import model.Action2;
 import model.Action1;
+import model.Etel;
 
 public class GUI extends javax.swing.JFrame
 {
@@ -19,8 +21,17 @@ public class GUI extends javax.swing.JFrame
     private final Action2<Integer, String> newRendelesAddedEvent;
     private final Action etelekFajlbaIrEvent;
     private final Action rendelesekFajlbaIrEvent;
+    private final Action nyugtaMegjelenitEvent;
+    private final Action2<String, Integer> ujEtelHozzaadasaEvent;
     
-    public GUI(Action1<Integer> radioButtonSelectionChangedEvent, Action2<Integer, String> newRendelesAddedEvent, Action etelekFajlbaIrEvent, Action rendelesekFajlbaIrEvent)
+    public GUI(
+        Action1<Integer> radioButtonSelectionChangedEvent,
+        Action2<Integer, String> newRendelesAddedEvent,
+        Action etelekFajlbaIrEvent,
+        Action rendelesekFajlbaIrEvent,
+        Action nyugtaMegjelenitEvent,
+        Action2<String, Integer> ujEtelHozzaadasaEvent
+    )
     {
         initComponents();
         jelenlegKivalasztottAsztalIndex = 0;
@@ -29,6 +40,8 @@ public class GUI extends javax.swing.JFrame
         this.newRendelesAddedEvent = newRendelesAddedEvent;
         this.etelekFajlbaIrEvent = etelekFajlbaIrEvent;
         this.rendelesekFajlbaIrEvent = rendelesekFajlbaIrEvent;
+        this.nyugtaMegjelenitEvent = nyugtaMegjelenitEvent;
+        this.ujEtelHozzaadasaEvent = ujEtelHozzaadasaEvent;
         setVisible(true);
     }
     
@@ -41,14 +54,31 @@ public class GUI extends javax.swing.JFrame
         }
     }
     
-    public void setRendelesek(List<String> rendelesek)
+    public void setRendelesek(List<Etel> rendelesek)
     {
         final DefaultListModel<String> dlm = new DefaultListModel();
-        for (String rendeles : rendelesek)
+        for (Etel rendeles : rendelesek)
         {
-            dlm.addElement(rendeles);
+            dlm.addElement(rendeles.getNev());
         }
         rendelesekLista.setModel(dlm);
+    }
+    
+    public void etelekListahozHozzaad(String etel)
+    {
+        listahozHozzaad(etelekLista, etel);
+    }
+    
+    private void listahozHozzaad(JList<String> lista, String ujElem)
+    {
+        final ListModel<String> elemek = lista.getModel();
+        final DefaultListModel<String> dlm = new DefaultListModel();
+        for (int i = 0; i < elemek.getSize(); i++)
+        {
+            dlm.addElement(elemek.getElementAt(i));
+        }
+        dlm.addElement(ujElem);
+        lista.setModel(dlm);
     }
 
     @SuppressWarnings("unchecked")
@@ -75,6 +105,7 @@ public class GUI extends javax.swing.JFrame
         rendelesekListaScrollPane = new javax.swing.JScrollPane();
         rendelesekLista = new javax.swing.JList<>();
         rendelesekFajlbaIrGomb = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Rendelés");
@@ -87,6 +118,11 @@ public class GUI extends javax.swing.JFrame
         etelArLabel.setText("Ár:");
 
         ujEteltHozzaadGomb.setText("+");
+        ujEteltHozzaadGomb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ujEteltHozzaadGombActionPerformed(evt);
+            }
+        });
 
         etelekListaScrollPane.setViewportView(etelekLista);
 
@@ -240,6 +276,13 @@ public class GUI extends javax.swing.JFrame
                 .addContainerGap())
         );
 
+        jButton1.setText("Nyugtáz");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -252,6 +295,10 @@ public class GUI extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(rendelesekPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -261,6 +308,8 @@ public class GUI extends javax.swing.JFrame
                     .addComponent(rendelesekPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(asztalPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(etelekPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -285,14 +334,7 @@ public class GUI extends javax.swing.JFrame
 
     private void ujRendelestHozzaadGombActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ujRendelestHozzaadGombActionPerformed
         final String etel = etelekLista.getSelectedValue();
-        final ListModel<String> rendelesek = rendelesekLista.getModel();
-        final DefaultListModel<String> dlm = new DefaultListModel();
-        for (int i = 0; i < rendelesek.getSize(); i++)
-        {
-            dlm.addElement(rendelesek.getElementAt(i));
-        }
-        dlm.addElement(etel);
-        rendelesekLista.setModel(dlm);
+        listahozHozzaad(rendelesekLista, etel);
         newRendelesAddedEvent.invoke(jelenlegKivalasztottAsztalIndex, etel);
     }//GEN-LAST:event_ujRendelestHozzaadGombActionPerformed
 
@@ -303,6 +345,14 @@ public class GUI extends javax.swing.JFrame
     private void etelekFajlbaIrGombActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_etelekFajlbaIrGombActionPerformed
         etelekFajlbaIrEvent.invoke();
     }//GEN-LAST:event_etelekFajlbaIrGombActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        nyugtaMegjelenitEvent.invoke();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void ujEteltHozzaadGombActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ujEteltHozzaadGombActionPerformed
+        ujEtelHozzaadasaEvent.invoke(etelNevTextField.getText(), (int)etelArSpinner.getValue());
+    }//GEN-LAST:event_ujEteltHozzaadGombActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup asztalButtonGroup;
@@ -316,6 +366,7 @@ public class GUI extends javax.swing.JFrame
     private javax.swing.JScrollPane etelekListaScrollPane;
     private javax.swing.JPanel etelekPanel;
     private javax.swing.JRadioButton feherAszalRadioButton;
+    private javax.swing.JButton jButton1;
     private javax.swing.JRadioButton kekAszalRadioButton;
     private javax.swing.JRadioButton pirosAszalRadioButton;
     private javax.swing.JButton rendelesekFajlbaIrGomb;
