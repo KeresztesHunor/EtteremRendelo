@@ -1,7 +1,7 @@
 package etteremrendelo;
 
 import model.Etel;
-import model.Modell;
+import model.Etterem;
 
 public class NyugtaKonzol implements Nyugta
 {
@@ -21,7 +21,7 @@ public class NyugtaKonzol implements Nyugta
         this.kisValaszto = kv;
     }
     
-    @Override public void kiir(Modell etterem)
+    @Override public void kiir(Etterem etterem)
     {
         System.out.println("Nyugta");
         for (int i = 0; i < 4; i++)
@@ -30,7 +30,7 @@ public class NyugtaKonzol implements Nyugta
             System.out.println(etterem.getAsztal(i).getAsztalNev());
             System.out.println(kisValaszto);
             int osszAr = 0;
-            for (Etel rendeles : etterem.getRendelesek(i))
+            for (Etel rendeles : etterem.getAsztal(i).getRendelesek())
             {
                 osszAr += rendeles.getAr();
                 System.out.printf("%-28s %8d Ft\n", rendeles.getNev(), rendeles.getAr());

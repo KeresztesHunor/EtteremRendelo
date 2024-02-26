@@ -1,8 +1,8 @@
 package etteremrendelo;
 
-import model.Modell;
+import model.Etterem;
 
 public interface Nyugta
 {
-    void kiir(Modell etterem);
+    void kiir(Etterem etterem);
 }

@@ -5,64 +5,68 @@ import model.Action2;
 import view.GUI;
 import model.Action1;
 import model.Etel;
-import model.Modell;
+import model.Etterem;
 import view.NyugtaGUI;
 
 public class EtteremRendelo
 {
-    private final Modell modell;
+    private final Etterem etterem;
     private final GUI gui;
     private final Nyugta nyugta;
     
     private EtteremRendelo()
     {
-        modell = new Modell();
+        etterem = new Etterem();
+        etterem.eteleketFajlbolBeolvas();
         gui = new GUI(
             new Action1<Integer>() {
                 @Override public void invoke(Integer index)
                 {
-                    gui.setRendelesek(modell.getRendelesek(index));
+                    gui.setRendelesek(etterem.getAsztal(index).getRendelesek());
                 }
             },
             (Integer index, String etel) -> {
                 int i = 0;
-                while (i < modell.getEtelekLength() && !modell.getEtel(i).getNev().equals(etel))
+                while (i < etterem.getEtelekLength() && !etterem.getEtel(i).getNev().equals(etel))
                 {
                     i++;
                 }
-                if (i < modell.getEtelekLength())
+                if (i < etterem.getEtelekLength())
                 {
-                    modell.ujRendeles(index, modell.getEtel(i));
+                    etterem.ujRendeles(index, etterem.getEtel(i));
                 }
             },
             () -> {
-                modell.eteleketFajlbaIr();
+                etterem.eteleketFajlbaIr();
             },
             () -> {
-                modell.rendeleseketFajlbaIr();
+                etterem.rendeleseketFajlbaIr();
             },
             () -> {
                 new NyugtaGUI(new Action() {
                     @Override public void invoke()
                     {
-                        nyugta.kiir(modell);
+                        nyugta.kiir(etterem);
                     }
                 })
-                .nyugtatKiir(
-                    modell.getRendelesek(0),
-                    modell.getRendelesek(1),
-                    modell.getRendelesek(2),
-                    modell.getRendelesek(3)
+                .nyugtatKiir(etterem.getAsztal(0).getRendelesek(),
+                    etterem.getAsztal(1).getRendelesek(),
+                    etterem.getAsztal(2).getRendelesek(),
+                    etterem.getAsztal(3).getRendelesek()
                 );
             },
             new Action2<String, Integer>() {
                 @Override public void invoke(String nev, Integer ar)
                 {
-                    modell.ujEtel(new Etel(nev, ar));
+                    etterem.ujEtel(new Etel(nev, ar));
                     gui.etelekListahozHozzaad(nev);
                 }
             }
         );
+        for (int i = 0; i < etterem.getEtelekLength(); i++)
+        {
+            gui.etelekListahozHozzaad(etterem.getEtel(i).getNev());
+        }
         nyugta = new NyugtaKonzol('=', '-');
     }
     

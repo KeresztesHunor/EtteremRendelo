@@ -1,20 +1,23 @@
 package model;
 
 import etteremrendelo.EtteremRendelo;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Modell
+public class Etterem
 {
     private final List<Etel> etelek;
     private final Asztal[] asztalok;
     
-    public Modell()
+    public Etterem()
     {
         etelek = new ArrayList();
         asztalok = new Asztal[4];
@@ -44,14 +47,27 @@ public class Modell
         return asztalok[index];
     }
     
-    public List<Etel> getRendelesek(int asztalIndex)
-    {
-        return asztalok[asztalIndex].getRendelesek();
-    }
-    
     public void ujRendeles(int asztalIndex, Etel rendeles)
     {
         asztalok[asztalIndex].ujRendeles(rendeles);
+    }
+    
+    public void eteleketFajlbolBeolvas()
+    {
+        try
+        {
+            File f = new File("etelek.txt");
+            Scanner sc = new Scanner(f);
+            while (sc.hasNextLine())
+            {
+                String[] line = sc.nextLine().split("\\|");
+                etelek.add(new Etel(line[0], Integer.parseInt(line[1])));
+            }
+        }
+        catch (FileNotFoundException ex)
+        {
+            System.out.println("yikes");
+        }
     }
     
     public void eteleketFajlbaIr()
@@ -80,6 +96,16 @@ public class Modell
             }
         }
         fajlbaIr("rendelesek.txt", sorok);
+    }
+    
+    private int asztalIndex(String asztalNev)
+    {
+        int i = 0;
+        while (i < asztalok.length && !asztalok[i].getAsztalNev().equals(asztalNev))
+        {
+            i++;
+        }
+        return i < asztalok.length ? i : -1;
     }
     
     private static void fajlbaIr(String filePath, List<String> sorok)
